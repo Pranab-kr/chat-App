@@ -79,9 +79,11 @@ export const login = async (req, res) => {
     };
 
     // Send token in response
-    res
-      .cookie("token", token, options)
-      .json({ message: "Login successful", jwtToken: token });
+    res.cookie("token", token, options).json({
+      message: "Login successful",
+      username: existingUser.username,
+      jwtToken: token,
+    });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
@@ -90,6 +92,22 @@ export const login = async (req, res) => {
 // Logout controller
 export const logout = (req, res) => {
   try {
-    res.clearCookie("token").json({ message: "Logout successful" });
-  } catch (error) {}
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    return res.json({ message: "Logout successful" });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    pass;
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
