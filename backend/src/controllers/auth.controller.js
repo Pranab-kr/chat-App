@@ -2,7 +2,7 @@ import { User } from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
 import { registerSchema, loginSchema } from "../validation/auth.validation.js";
 import { generateJwtToken } from "../utils/genJwtToken.js";
-import { jwt } from "zod";
+import cloudinary from "../utils/cloudinary.js";
 
 // Signup controller
 export const signup = async (req, res) => {
@@ -104,9 +104,50 @@ export const logout = (req, res) => {
   }
 };
 
-export const updateProfile = async (req, res) => {
+// Update Profile Picture controller
+export const updateProfilePic = async (req, res) => {
   try {
-    pass;
+    const { profilePic } = req.body;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    let profilePicUrl = user.profilePic;
+
+    //uploads new image
+    if (profilePic) {
+      const uploadResult = await cloudinary.uploader.upload(profilePic, {
+        folder: "chatApp/profile_pics",
+        width: 150,
+        height: 150,
+        crop: "fill",
+      });
+
+      profilePicUrl = uploadResult.secure_url;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: profilePicUrl },
+      { new: true }
+    ).select("-password");
+
+    res.json({
+      message: "Profile picture updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//get current user controller
+export const getCurrentUser = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).select("-password");
+
+    res.json({ user });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

@@ -1,5 +1,11 @@
 import express from "express";
-import { signup, login, logout } from "../controllers/auth.controller.js";
+import {
+  signup,
+  login,
+  logout,
+  updateProfilePic,
+  getCurrentUser,
+} from "../controllers/auth.controller.js";
 import { ensureAuth } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
@@ -10,6 +16,8 @@ router.post("/login", login);
 
 router.post("/logout", logout);
 
-router.patch("/update-profile", ensureAuth, updateProfile);
+router.patch("/update-profile", ensureAuth, updateProfilePic);
+
+router.get("/current-user", ensureAuth, getCurrentUser);
 
 export default router;

@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { User } from "../models/User.model.js";
+import { User } from "../models/user.model.js";
 
 export const userAuthMiddleware = async (req, res, next) => {
   try {
@@ -11,7 +11,7 @@ export const userAuthMiddleware = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-password");
+    const user = await User.findById(decoded?.userId).select("-password");
 
     if (!user) {
       return next();
