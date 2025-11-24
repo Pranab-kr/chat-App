@@ -34,9 +34,12 @@ export const signup = async (req, res) => {
 
     await newUser.save();
 
-    res
-      .status(201)
-      .json({ message: `User: ${newUser.username} registered successfully` });
+    const returnedUser = await User.findById(newUser._id).select("-password");
+
+    res.status(201).json({
+      message: `User: ${newUser.username} registered successfully`,
+      user: returnedUser,
+    });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
@@ -62,7 +65,7 @@ export const login = async (req, res) => {
 
     const isPasswordValid = await bcryptjs.compare(
       password,
-      existingUser.password,
+      existingUser.password
     );
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Invalid credentials" });
@@ -78,10 +81,13 @@ export const login = async (req, res) => {
       sameSite: "strict",
     };
 
+    const returnedUser = await User.findById(existingUser._id).select(
+      "-password"
+    );
     // Send token in response
     res.cookie("token", token, options).json({
       message: "Login successful",
-      username: existingUser.username,
+      user: returnedUser,
       jwtToken: token,
     });
   } catch (error) {
@@ -128,7 +134,7 @@ export const updateProfilePic = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: profilePicUrl },
-      { new: true },
+      { new: true }
     ).select("-password");
 
     res.json({
