@@ -150,7 +150,7 @@ export const updateProfilePic = async (req, res) => {
 export const getCurrentUser = async (req, res) => {
   try {
     const userId = req.user._id;
-
+    // console.log(userId)
     const user = await User.findById(userId).select("-password");
 
     res.json({ user });

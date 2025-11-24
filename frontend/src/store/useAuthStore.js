@@ -12,10 +12,11 @@ export const useAuthStore = create((set) => ({
   checkAuth: async () => {
     try {
       const res = await apiClient.get("/auth/current-user");
-
+      console.log("✅ checkAuth success:", res.data);
       set({ authUser: res.data.user });
+
     } catch (error) {
-      console.log("error in check auth", error);
+      console.log("❌ error in check auth", error.response?.data || error.message);
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
