@@ -3,6 +3,7 @@ import express from "express";
 import authRouter from "./routes/auth.routes.js";
 import { connectDB } from "./db/connection.js";
 import { userAuthMiddleware } from "./middlewares/auth.middleware.js";
+import messageRouter from './routes/message.routes.js'
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(cookieParser());
 app.use(userAuthMiddleware);
 
 app.use("/api/auth", authRouter);
+app.use("/api/message", messageRouter);
 
 app.get("/", (req, res) => {
   res.json("Server is running!");

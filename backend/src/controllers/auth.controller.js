@@ -62,7 +62,7 @@ export const login = async (req, res) => {
 
     const isPasswordValid = await bcryptjs.compare(
       password,
-      existingUser.password
+      existingUser.password,
     );
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Invalid credentials" });
@@ -128,7 +128,7 @@ export const updateProfilePic = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: profilePicUrl },
-      { new: true }
+      { new: true },
     ).select("-password");
 
     res.json({
