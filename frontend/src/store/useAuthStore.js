@@ -78,6 +78,20 @@ export const useAuthStore = create((set) => ({
 
   //update profile
   updateProfile: async (formData) => {
-    //todo
-  }
+    set({ isUpdatingProfile: true });
+    try {
+      const res = await apiClient.patch("/auth/update-profile", formData);
+
+      set({ authUser: res.data.user });
+
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      console.log("error in update profile", error);
+      toast.error("Profile update failed. Please try again.");
+
+      throw error;
+    } finally {
+      set({ isUpdatingProfile: false });
+    }
+  },
 }));
