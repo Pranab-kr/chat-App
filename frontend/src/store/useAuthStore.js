@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { apiClient } from "../lib/axios.js";
 import { toast } from "react-hot-toast";
+
 export const useAuthStore = create((set) => ({
   authUser: null,
   isSigningUp: false,
@@ -12,17 +13,21 @@ export const useAuthStore = create((set) => ({
   checkAuth: async () => {
     try {
       const res = await apiClient.get("/auth/current-user");
-      console.log("✅ checkAuth success:", res.data);
+      // console.log("✅ checkAuth success:", res.data);
       set({ authUser: res.data.user });
-
     } catch (error) {
-      console.log("❌ error in check auth", error.response?.data || error.message);
+      console.log(
+        "❌ error in check auth",
+        error.response?.data || error.message
+      );
+
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
     }
   },
 
+  //signup
   signup: async (formData) => {
     set({ isSigningUp: true });
     try {
@@ -40,6 +45,7 @@ export const useAuthStore = create((set) => ({
     }
   },
 
+  //login
   login: async (formData) => {
     set({ isLoggingIn: true });
     try {
@@ -56,6 +62,8 @@ export const useAuthStore = create((set) => ({
       set({ isLoggingIn: false });
     }
   },
+
+  //logout
   logout: async () => {
     try {
       await apiClient.post("/auth/logout");
@@ -67,4 +75,9 @@ export const useAuthStore = create((set) => ({
       throw error;
     }
   },
+
+  //update profile
+  updateProfile: async (formData) => {
+    //todo
+  }
 }));
