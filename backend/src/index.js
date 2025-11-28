@@ -20,7 +20,7 @@ app.use(cors({
 app.use(userAuthMiddleware);
 
 app.use("/api/auth", authRouter);
-app.use("/api/message", messageRouter);
+app.use("/api/messages", messageRouter);
 
 app.get("/", (req, res) => {
   res.json("Server is running!");

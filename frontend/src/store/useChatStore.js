@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import toast from 'react-hot-toast'
+import toast from "react-hot-toast";
 import { apiClient } from "../lib/axios.js";
 
 export const useChatStore = create((set) => ({
   messages: [],
   users: [],
   seletedUser: null,
-  isUserLoading: false,
+  isUsersLoading: false,
   isMessageLoading: false,
 
   getUsers: async () => {
@@ -22,7 +22,7 @@ export const useChatStore = create((set) => ({
   },
 
   getMessages: async (userId) => {
-    set({ isMessageLoading: true, seletedUser: userId });
+    set({ isMessageLoading: true });
     try {
       const response = await apiClient.get(`/messages/${userId}`);
       set({ messages: response.data });
@@ -33,4 +33,6 @@ export const useChatStore = create((set) => ({
     }
   },
 
+  //todo: optimize this one later
+  setSelectedUser: (user) => set({ selectedUser: user }),
 }));
