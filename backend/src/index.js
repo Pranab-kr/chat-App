@@ -6,8 +6,8 @@ import { userAuthMiddleware } from "./middlewares/auth.middleware.js";
 import messageRouter from './routes/message.routes.js'
 import cookieParser from "cookie-parser";
 import cors from 'cors'
+import { app, server } from "./utils/socket.js";
 
-const app = express();
 const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 
 connectDB()
   .then(() => {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })

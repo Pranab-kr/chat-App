@@ -39,7 +39,9 @@ export const useChatStore = create((set, get) => ({
 
     try {
       const res  = await apiClient.post(`/messages/send/${selectedUser._id}`, messageData);
+
       set({ messages: [...messages, res.data] });
+
     } catch (error) {
       toast.error("Failed to send message");
       console.error("Send message error:", error);

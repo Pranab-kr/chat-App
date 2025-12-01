@@ -1,14 +1,18 @@
 import { create } from "zustand";
 import { apiClient } from "../lib/axios.js";
 import { toast } from "react-hot-toast";
+import { io } from "socket.io-client";
 
-export const useAuthStore = create((set) => ({
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+
+export const useAuthStore = create((set, get) => ({
   authUser: null,
   isSigningUp: false,
   isLoggingIn: false,
   isUpdatingProfile: false,
   isCheckingAuth: true,
   onlineUsers: [],
+  socket: null,
 
   //check authentication status first page load
   checkAuth: async () => {
@@ -16,6 +20,8 @@ export const useAuthStore = create((set) => ({
       const res = await apiClient.get("/auth/current-user");
       // console.log("✅ checkAuth success:", res.data);
       set({ authUser: res.data.user });
+
+      get().connectSocket();
     } catch (error) {
       console.log(
         "❌ error in check auth",
@@ -55,6 +61,8 @@ export const useAuthStore = create((set) => ({
       set({ authUser: res.data.user });
 
       toast.success("Logged in successfully");
+
+      get().connectSocket();
     } catch (error) {
       console.log("error in login", error);
       toast.error("Login failed. Please check your credentials.");
@@ -69,7 +77,10 @@ export const useAuthStore = create((set) => ({
     try {
       await apiClient.post("/auth/logout");
       set({ authUser: null });
+
       toast.success("Logged out successfully");
+
+      get().disconnectSocket();
     } catch (error) {
       console.log("error in logout", error);
       toast.error("Logout failed. Please try again.");
@@ -94,5 +105,36 @@ export const useAuthStore = create((set) => ({
     } finally {
       set({ isUpdatingProfile: false });
     }
+  },
+
+  // connect socket
+  connectSocket: () => {
+    const { authUser } = get();
+    if (!authUser || get().socket?.connected) return;
+
+    const socket = io(BASE_URL, {
+      autoConnect: false,
+      query: { userId: authUser._id },
+    });
+    set({ socket });
+
+    socket.connect();
+
+    // Remove any existing listeners before adding new ones
+    socket.off("getOnlineUsers");
+
+    socket.on("getOnlineUsers", (onlineUsers) => {
+      set({ onlineUsers });
+    });
+  },
+
+  // disconnect socket
+  disconnectSocket: () => {
+    const socket = get().socket;
+    if (socket?.connected) {
+      socket.off("getOnlineUsers"); // Remove listeners
+      socket.disconnect();
+    }
+    set({ socket: null });
   },
 }));
