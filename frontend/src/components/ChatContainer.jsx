@@ -7,8 +7,14 @@ import { formatMessageTime } from "../lib/utils.js";
 import { useAuthStore } from "../store/useAuthStore.js";
 
 const ChatContainer = () => {
-  const { messages, isMessageLoading, getMessages, selectedUser } =
-    useChatStore();
+  const {
+    messages,
+    isMessageLoading,
+    getMessages,
+    selectedUser,
+    subcribeToNewMessages,
+    unscribeFromNewMessages,
+  } = useChatStore();
 
   const { authUser } = useAuthStore();
 
@@ -17,8 +23,18 @@ const ChatContainer = () => {
   useEffect(() => {
     if (selectedUser?._id) {
       getMessages(selectedUser._id);
+      subcribeToNewMessages();
     }
-  }, [selectedUser?._id, getMessages]);
+
+    return () => {
+      unscribeFromNewMessages();
+    };
+  }, [
+    selectedUser?._id,
+    getMessages,
+    subcribeToNewMessages,
+    unscribeFromNewMessages,
+  ]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
