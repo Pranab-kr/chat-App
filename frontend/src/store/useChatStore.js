@@ -58,7 +58,7 @@ export const useChatStore = create((set, get) => ({
     if (!socket) return;
 
     socket.on("newMessage", (newMessage) => {
-      const { messages, selectedUser } = get(); // ✅ Get current state when event fires
+      const { messages, selectedUser } = get(); // Get current state when event fires
 
       //only add message if it's from/to the selected user
       if (
@@ -78,6 +78,5 @@ export const useChatStore = create((set, get) => ({
     socket.off("newMessage");
   },
 
-  //todo: optimize this one later
   setSelectedUser: (user) => set({ selectedUser: user }),
 }));
